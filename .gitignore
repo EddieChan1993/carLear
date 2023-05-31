@@ -6,4 +6,4 @@ crash.json
 *.log
 data
 a9a.train
-.model
+*.model

@@ -7,12 +7,13 @@ import (
 
 func main() {
 	svm := core.NewSVM(core.LibSVM)
-	svm.Train()
-	return
+	//svm.Train()
+	//return
 	total := 0
 	success := 0
 	fail := 0
-	svm.TestDataByFolder(map[core.ImgPath]core.Label{core.TestIsPath: core.LabelYes}, func(path core.ImgPath, check, label core.Label) {
+	svm.TestDataByFolder(map[core.ImgPath]core.Label{core.TestNoPath: core.LabelNo}, func(path core.ImgPath, check, label core.Label) {
+		fmt.Println(path, "check", check)
 		if check == label {
 			success++
 		} else {

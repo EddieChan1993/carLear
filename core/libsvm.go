@@ -9,7 +9,7 @@ import (
 )
 
 /**
-libsvm
+libsvm 该第三方库目前存在性能问题，暂不推荐使用
 */
 
 type Tlibsvm struct {
@@ -95,18 +95,18 @@ func (s *Tlibsvm) addTrainData() {
 	isImgPaths := util.DirFiles(TrainIsPath)
 	noImgPaths := util.DirFiles(TrainNoPath)
 	for _, filePath := range isImgPaths {
-		vals := s.toVector(filePath, LabelYes)
+		vals := s.toVectorSlice(filePath, LabelYes)
 		fileBuffer.WriteString(fmt.Sprintf("%f", LabelYes))
 		for index, val := range vals {
-			fileBuffer.WriteString(fmt.Sprintf(" %d:%f", index, val))
+			fileBuffer.WriteString(fmt.Sprintf(" %d:%f", index+1, val))
 		}
 		fileBuffer.WriteString("\n")
 	}
 	for _, filePath := range noImgPaths {
-		vals := s.toVector(filePath, LabelNo)
+		vals := s.toVectorSlice(filePath, LabelNo)
 		fileBuffer.WriteString(fmt.Sprintf("%f", LabelNo))
 		for index, val := range vals {
-			fileBuffer.WriteString(fmt.Sprintf(" %d:%f", index, val))
+			fileBuffer.WriteString(fmt.Sprintf(" %d:%f", index+1, val))
 		}
 		fileBuffer.WriteString("\n")
 	}
@@ -129,4 +129,16 @@ func (s *Tlibsvm) toVector(filePath string, label Label) map[int]float64 {
 		tmp[i+1] = f
 	}
 	return tmp
+}
+
+func (s *Tlibsvm) toVectorSlice(filePath string, label Label) []float64 {
+	img := gocv.IMRead(filePath, gocv.IMReadColor)
+	mat := gocv.NewMat()
+	defer mat.Close()
+	img.ConvertTo(&mat, gocv.MatTypeCV64F)
+	f64, err := mat.DataPtrFloat64()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return f64
 }
