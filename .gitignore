@@ -1,0 +1,7 @@
+*.log.json
+*.error.json
+.idea
+crash.json
+.fleet
+*.log
+data
