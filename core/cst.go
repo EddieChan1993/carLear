@@ -1,10 +1,10 @@
 package core
 
 const (
-	trainIsPath = "./data/has/train"
-	trainNoPath = "./data/no/train"
-	testIsPath  = "./data/has/test"
-	testNoPath  = "./data/no/test"
+	TrainIsPath = "./data/has/train"
+	TrainNoPath = "./data/no/train"
+	TestIsPath  = "./data/has/test"
+	TestNoPath  = "./data/no/test"
 
 	modelPath = "./model.xml"
 )

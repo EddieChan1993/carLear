@@ -8,13 +8,13 @@ import (
 	"log"
 )
 
-type Label = float64 //标签
-type Path = string   //数据路径
-type TestPin = map[Path]Label
+type Label = float64  //标签
+type ImgPath = string //图片路径，或文件夹路径
+type TestPin = map[ImgPath]Label
 
 const (
-	LabelYes Label = 1
-	LabelNo  Label = 0
+	LabelYes Label = 1 //真
+	LabelNo  Label = 0 //假
 )
 
 var SVMIns *Svm
@@ -24,7 +24,7 @@ type Svm struct {
 	params  golinear.Parameters
 }
 
-func InitSvm() {
+func initSvm() {
 	ins := &Svm{
 		problem: golinear.NewProblem(),
 		params:  golinear.DefaultParameters(),
@@ -35,9 +35,7 @@ func InitSvm() {
 }
 
 func (s *Svm) Train() {
-	s.addTrainData(func(instance *golinear.TrainingInstance) {
-		s.problem.Add(*instance)
-	})
+	s.addTrainData()
 	model, err := golinear.TrainModel(s.params, s.problem)
 	if err != nil {
 		log.Fatal(fmt.Errorf("TrainModel err %v", err))
@@ -51,44 +49,53 @@ func (s *Svm) Train() {
 	}
 }
 
-// TestData 测试数据验证
-func (s *Svm) TestData(pin TestPin, fn func(isOk bool)) {
+// TestDataByFolder 测试某个文件夹下的数据
+func (s *Svm) TestDataByFolder(pin TestPin, fn func(path ImgPath, isOk bool)) {
+	res := make(TestPin, 3000)
+	for folder, label := range pin {
+		allData := util.DirFiles(folder)
+		for _, path := range allData {
+			res[path] = label
+		}
+	}
+	s.TestDataByImgPath(res, func(path ImgPath, isOk bool) {
+		fn(path, isOk)
+	})
+}
+
+// TestDataByImgPath 测试某个指定文件地址数据
+func (s *Svm) TestDataByImgPath(pin TestPin, fn func(path ImgPath, isOk bool)) {
 	if pin == nil {
-		pin = map[Path]Label{testIsPath: LabelYes, testNoPath: LabelNo}
+		pin = map[ImgPath]Label{TestIsPath: LabelYes, TestNoPath: LabelNo}
 	}
 	modelNow, err := golinear.LoadModel(modelPath)
 	if err != nil {
 		log.Fatal(fmt.Errorf("LoadModel err %v", err))
 	}
-	res := make([]*golinear.TrainingInstance, 0, 3000)
-	for path, label := range pin {
-		testFilePath := util.DirFiles(path)
-		for _, filePath := range testFilePath {
-			res = append(res, s.toVector(filePath, label))
-		}
-	}
-	for _, obj := range res {
+	//等于预期否
+	for filePath, label := range pin {
+		obj := s.toVector(filePath, label)
 		check := modelNow.Predict(obj.Features)
-		//等于预期否
-		fn(check == obj.Label)
+		fn(filePath, check == obj.Label)
 	}
 }
 
-// addTrainData 加载数据集
-func (s *Svm) addTrainData(fn func(*golinear.TrainingInstance)) {
-	isImgPaths := util.DirFiles(trainIsPath)
-	noImgPaths := util.DirFiles(trainNoPath)
+// addTrainData 加载数据集到
+func (s *Svm) addTrainData() {
+	isImgPaths := util.DirFiles(TrainIsPath)
+	noImgPaths := util.DirFiles(TrainNoPath)
 	for _, filePath := range isImgPaths {
-		fn(s.toVector(filePath, LabelYes))
+		s.problem.Add(*s.toVector(filePath, LabelYes))
 		fmt.Printf("imgPath %s label %f ToFloat Ok\n", filePath, LabelYes)
 	}
 	for _, filePath := range noImgPaths {
-		fn(s.toVector(filePath, LabelNo))
+		s.problem.Add(*s.toVector(filePath, LabelNo))
 		fmt.Printf("imgPath %s label %f ToFloat Ok\n", filePath, LabelNo)
 	}
 	fmt.Println("train Data total", len(isImgPaths)+len(noImgPaths))
 }
 
+// toVector 图片信息转为向量
 func (s *Svm) toVector(filePath string, label Label) *golinear.TrainingInstance {
 	img := gocv.IMRead(filePath, gocv.IMReadColor)
 	mat := gocv.NewMat()
