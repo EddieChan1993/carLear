@@ -50,7 +50,7 @@ func (s *Svm) Train() {
 }
 
 // TestDataByFolder 测试某个文件夹下的数据
-func (s *Svm) TestDataByFolder(pin TestPin, fn func(path ImgPath, isOk bool)) {
+func (s *Svm) TestDataByFolder(pin TestPin, fn func(path ImgPath, check, label Label)) {
 	res := make(TestPin, 3000)
 	for folder, label := range pin {
 		allData := util.DirFiles(folder)
@@ -58,16 +58,13 @@ func (s *Svm) TestDataByFolder(pin TestPin, fn func(path ImgPath, isOk bool)) {
 			res[path] = label
 		}
 	}
-	s.TestDataByImgPath(res, func(path ImgPath, isOk bool) {
-		fn(path, isOk)
+	s.TestDataByImgPath(res, func(path ImgPath, check, label Label) {
+		fn(path, check, label)
 	})
 }
 
 // TestDataByImgPath 测试某个指定文件地址数据
-func (s *Svm) TestDataByImgPath(pin TestPin, fn func(path ImgPath, isOk bool)) {
-	if pin == nil {
-		pin = map[ImgPath]Label{TestIsPath: LabelYes, TestNoPath: LabelNo}
-	}
+func (s *Svm) TestDataByImgPath(pin TestPin, fn func(path ImgPath, check, label Label)) {
 	modelNow, err := golinear.LoadModel(modelPath)
 	if err != nil {
 		log.Fatal(fmt.Errorf("LoadModel err %v", err))
@@ -76,7 +73,7 @@ func (s *Svm) TestDataByImgPath(pin TestPin, fn func(path ImgPath, isOk bool)) {
 	for filePath, label := range pin {
 		obj := s.toVector(filePath, label)
 		check := modelNow.Predict(obj.Features)
-		fn(filePath, check == obj.Label)
+		fn(filePath, check, obj.Label)
 	}
 }
 

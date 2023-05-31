@@ -11,11 +11,10 @@ func main() {
 	total := 0
 	success := 0
 	fail := 0
-	core.SVMIns.TestDataByFolder(map[core.ImgPath]core.Label{core.TrainIsPath: core.LabelYes}, func(imgPath string, isOk bool) {
-		if isOk {
+	core.SVMIns.TestDataByFolder(map[core.ImgPath]core.Label{core.TestIsPath: core.LabelYes}, func(path core.ImgPath, check, label core.Label) {
+		if check == label {
 			success++
 		} else {
-			fmt.Println(imgPath)
 			fail++
 		}
 		total++
