@@ -1,5 +1,7 @@
 github.com/danieldk/golinear v1.0.0 h1:SIUsKfJxNPlOc5ci1rWKTV+c0ExPU69LPPN4Yspzxls=
 github.com/danieldk/golinear v1.0.0/go.mod h1:5xywb7dfkTFww11OzVzvytf0WJ+OGLMOFg4cAMT+yp8=
+github.com/ewalker544/libsvm-go v0.0.0-20140912030911-ec8445221ede h1:eglYe5/Re5c2Bsp0EpCiBHd7dos/D4ohSNXbuPvjAtw=
+github.com/ewalker544/libsvm-go v0.0.0-20140912030911-ec8445221ede/go.mod h1:lG1dFGz0DrRyIAY1kmqYTC8bZK2xhwL3bSZuJogoDso=
 github.com/hybridgroup/mjpeg v0.0.0-20140228234708-4680f319790e/go.mod h1:eagM805MRKrioHYuU7iKLUyFPVKqVV6um5DAvCkUtXs=
 github.com/pascaldekloe/goe v0.1.0/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 gocv.io/x/gocv v0.32.1 h1:BC9hHs5+47nVgySUFVKntc6RsF3SULFzqk6OV9xz+C0=

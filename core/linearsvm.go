@@ -1,5 +1,8 @@
 package core
 
+/**
+linear
+*/
 import (
 	"carLearn/util"
 	"fmt"
@@ -8,33 +11,22 @@ import (
 	"log"
 )
 
-type Label = float64  //标签
-type ImgPath = string //图片路径，或文件夹路径
-type TestPin = map[ImgPath]Label
-
-const (
-	LabelYes Label = 1 //真
-	LabelNo  Label = 0 //假
-)
-
-var SVMIns *Svm
-
-type Svm struct {
+type TLinearsvm struct {
 	problem *golinear.Problem
 	params  golinear.Parameters
 }
 
-func initSvm() {
-	ins := &Svm{
+func initLinearSvm() *TLinearsvm {
+	ins := &TLinearsvm{
 		problem: golinear.NewProblem(),
 		params:  golinear.DefaultParameters(),
 	}
 	ins.problem.SetBias(1)
 	ins.params.SolverType = golinear.NewL2RLogisticRegressionDefault()
-	SVMIns = ins
+	return ins
 }
 
-func (s *Svm) Train() {
+func (s *TLinearsvm) Train() {
 	s.addTrainData()
 	model, err := golinear.TrainModel(s.params, s.problem)
 	if err != nil {
@@ -43,14 +35,14 @@ func (s *Svm) Train() {
 	if model == nil {
 		log.Fatal("TrainModel model nil")
 	}
-	err = model.Save(modelPath)
+	err = model.Save(linearsvmPath)
 	if err != nil {
 		log.Fatal(fmt.Errorf("save err %v", err))
 	}
 }
 
 // TestDataByFolder 测试某个文件夹下的数据
-func (s *Svm) TestDataByFolder(pin TestPin, fn func(path ImgPath, check, label Label)) {
+func (s *TLinearsvm) TestDataByFolder(pin TestPin, fn func(path ImgPath, check, label Label)) {
 	res := make(TestPin, 3000)
 	for folder, label := range pin {
 		allData := util.DirFiles(folder)
@@ -64,8 +56,8 @@ func (s *Svm) TestDataByFolder(pin TestPin, fn func(path ImgPath, check, label L
 }
 
 // TestDataByImgPath 测试某个指定文件地址数据
-func (s *Svm) TestDataByImgPath(pin TestPin, fn func(path ImgPath, check, label Label)) {
-	modelNow, err := golinear.LoadModel(modelPath)
+func (s *TLinearsvm) TestDataByImgPath(pin TestPin, fn func(path ImgPath, check, label Label)) {
+	modelNow, err := golinear.LoadModel(linearsvmPath)
 	if err != nil {
 		log.Fatal(fmt.Errorf("LoadModel err %v", err))
 	}
@@ -78,7 +70,7 @@ func (s *Svm) TestDataByImgPath(pin TestPin, fn func(path ImgPath, check, label 
 }
 
 // addTrainData 加载数据集到
-func (s *Svm) addTrainData() {
+func (s *TLinearsvm) addTrainData() {
 	isImgPaths := util.DirFiles(TrainIsPath)
 	noImgPaths := util.DirFiles(TrainNoPath)
 	for _, filePath := range isImgPaths {
@@ -93,7 +85,7 @@ func (s *Svm) addTrainData() {
 }
 
 // toVector 图片信息转为向量
-func (s *Svm) toVector(filePath string, label Label) *golinear.TrainingInstance {
+func (s *TLinearsvm) toVector(filePath string, label Label) *golinear.TrainingInstance {
 	img := gocv.IMRead(filePath, gocv.IMReadColor)
 	mat := gocv.NewMat()
 	defer mat.Close()

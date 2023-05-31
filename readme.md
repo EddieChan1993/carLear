@@ -3,3 +3,6 @@
 https://github.com/hybridgroup/gocv
 https://github.com/lazywei/lineargo
 训练样本位于 data文件夹
+
+参考文章
+https://www.cnblogs.com/cxiang/p/9857159.html
