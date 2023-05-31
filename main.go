@@ -7,7 +7,7 @@ import (
 
 func main() {
 	core.InitCore()
-	core.SVMIns.Train()
+	//core.SVMIns.Train()
 	total := 0
 	success := 0
 	noSuccess := 0
