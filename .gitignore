@@ -5,3 +5,5 @@ crash.json
 .fleet
 *.log
 data
+a9a.train
+.model

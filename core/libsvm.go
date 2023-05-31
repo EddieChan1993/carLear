@@ -126,10 +126,7 @@ func (s *Tlibsvm) toVector(filePath string, label Label) map[int]float64 {
 	}
 	tmp := make(map[int]float64, len(f64))
 	for i, f := range f64 {
-		if i == 0 {
-			i = 1
-		}
-		tmp[i] = f
+		tmp[i+1] = f
 	}
 	return tmp
 }

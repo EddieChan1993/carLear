@@ -8,6 +8,7 @@ import (
 func main() {
 	svm := core.NewSVM(core.LibSVM)
 	svm.Train()
+	return
 	total := 0
 	success := 0
 	fail := 0
