@@ -2,3 +2,4 @@
 第三方包
 https://github.com/hybridgroup/gocv
 https://github.com/lazywei/lineargo
+训练样本位于 data文件夹
